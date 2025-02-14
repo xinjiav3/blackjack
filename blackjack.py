@@ -18,10 +18,20 @@ def calculate_hand_value(hand):
 def display_hand(name, hand):
     print(f"{name}'s hand: {', '.join(hand)} (Value: {calculate_hand_value(hand)})")
 
+def display_dealer_hand(hand, hide_second_card=True):
+    if hide_second_card:
+        shown_hand = [hand[0], '?']
+        print(f"Dealer's hand: {', '.join(shown_hand)} (Visible value: {CARD_VALUES[hand[0]]})")
+    else:
+        print(f"Dealer's hand: {', '.join(hand)} (Value: {calculate_hand_value(hand)})")
+
 def blackjack_game():
     print("Welcome to Blackjack!")
     player_hand = [deal_card(), deal_card()]
     dealer_hand = [deal_card(), deal_card()]
+    
+    # Show initial hands
+    display_dealer_hand(dealer_hand)
     
     while True:
         display_hand("Player", player_hand)
@@ -29,15 +39,18 @@ def blackjack_game():
             print("Bust! You lose.")
             return
         action = input("Do you want to hit or stand? (h/s): ").strip().lower()
+        
         if action == 'h':
             player_hand.append(deal_card())
         elif action == 's':
             break
     
+    # Show dealer's full hand once player stands
+    display_dealer_hand(dealer_hand, hide_second_card=False)
+    
     while calculate_hand_value(dealer_hand) < 17:
         dealer_hand.append(deal_card())
-    
-    display_hand("Dealer", dealer_hand)
+        display_dealer_hand(dealer_hand, hide_second_card=False)
     
     player_value = calculate_hand_value(player_hand)
     dealer_value = calculate_hand_value(dealer_hand)
